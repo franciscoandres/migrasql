@@ -12,24 +12,25 @@ readonly MIGRATE_FILE="${SQL_MAIN_FOLDER_NAME}/${SQL_MIGRATE_FILE_NAME}.sql";
 readonly CURRENT_DATE=$(date +%Y%m%d%H%M%S);
 
 if [ -z "$1" ]; then
-	echo -e "\n\e[91mYou must provide a name\e[0m\n";
+	printf "\n\e[91mYou must provide a name\e[0m\n";
 	exit 0;
 fi
 
 if [ ! -d "${FOLDERS_STRUCTURE}" ]; then
 	mkdir -p "${FOLDERS_STRUCTURE}";
-	touch "${SQL_MAIN_FOLDER_NAME}/${SQL_MIGRATE_FILE_NAME}.sql";
 fi
 
-echo -e "\e[1mCreating migration file...\e[0m \e[2m${FOLDERS_STRUCTURE}/${CURRENT_DATE}_$1.sql\e[0m"
-touch "${FOLDERS_STRUCTURE}/${CURRENT_DATE}_$1".sql;
-echo -e "\e[92mDone!\e[0m";
+touch "${SQL_MAIN_FOLDER_NAME}/${SQL_MIGRATE_FILE_NAME}.sql";
 
-# I think will be better check if file exists in migrate.sql and if not just add it
+printf "\e[1mCreating migration file...\e[0m \e[2m%s/%s_$1.sql\e[0m\n" "${FOLDERS_STRUCTURE}" "${CURRENT_DATE}";
+touch "${FOLDERS_STRUCTURE}/${CURRENT_DATE}_$1".sql;
+printf "\e[92mDone!\e[0m\n";
+
 if [ -e "${MIGRATE_FILE}" ]; then
 	rm -f "${MIGRATE_FILE}";
 fi
 
-for file in "${FOLDERS_STRUCTURE}"/*.sql; do
-	echo "\ir ${SQL_FILES_FOLDER_NAME}/$(basename "$file")" >> "${MIGRATE_FILE}";
+for sqlFile in "${FOLDERS_STRUCTURE}"/*.sql; do
+	printf "%s" "--- Your SQL code here!" >> "${sqlFile}";
+	printf "\ir %s/$(basename "${sqlFile}")%b\n" "${SQL_FILES_FOLDER_NAME}" >> "${MIGRATE_FILE}";
 done
